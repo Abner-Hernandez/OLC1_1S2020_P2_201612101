@@ -60,6 +60,7 @@
       <div class="row-fluid">
         <div class="span12">
 
+          <!--Texts Box Analize-->
           <div class="widget-box">
             <div class="widget-title"> <span class="icon"> <i class="icon-list"></i> </span>
               <h5>Full Width</h5>
@@ -67,7 +68,42 @@
             <div id="reqs" class="widget-content">
             </div>
           </div>
+          <!--End Text Box Analize-->
 
+          <!--Texts Box Python-->
+          <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-list"></i> </span>
+              <h5>Python</h5>
+            </div>
+            <div class="widget-content">
+              <textarea class="w3-input w3-border" id="python" value="1" style="width:97%" readonly ></textarea>
+            </div>
+          </div>
+          <!--End Text Box Python-->
+
+          <!--Texts Box Html-->
+          <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-list"></i> </span>
+              <h5>Html</h5>
+            </div>
+            <div class="widget-content">
+              <textarea class="w3-input w3-border" id="html" value="1" style="width:97%" readonly ></textarea>
+            </div>
+          </div>
+          <!--End Text Box Html-->
+
+          <!--Texts Box Json-->
+          <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-list"></i> </span>
+              <h5>Json</h5>
+            </div>
+            <div class="widget-content">
+              <textarea class="w3-input w3-border" id="json" value="1" style="width:97%" readonly ></textarea>
+            </div>
+          </div>
+          <!--End Text Box Json-->
+
+          <!--Table Tokens-->
           <div class="widget-box">
             <div class="widget-title"> <span class="icon"> <i class="icon-th"></i> </span>
               <h5>Tokens Table</h5>
@@ -81,26 +117,24 @@
                     <th>row(s)</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr class="odd gradeX">
-                    <td>Trident</td>
-                    <td>Internet
-                      Explorer 4.0</td>
-                    <td>Win 95+</td>
-                  </tr>
+                <tbody id="content_table">
                 </tbody>
               </table>
             </div>
           </div>
+          <!--End Table Tokens-->
 
+          <!--Load File-->
           <div class="widget-box">
             <div class="widget-title"> <span class="icon"> <i class="icon-list"></i> </span>
               <h5>Select File to Load</h5>
             </div>
-            <div class="widget-content"> <input type="file" id="myfile" name="myfile">
+            <div class="widget-content"> 
+              <input type="file" id="fileInput"/>
             </div>
           </div>
-          
+          <!--End Load FIle-->
+
         </div>
       </div>
     </div>
