@@ -12,22 +12,43 @@ function add() {
   reqs_id++; // increment reqs_id to get a unique ID for the new element
 
   //create textbox
-  var input = document.createElement('input');
+  var input = document.createElement('textarea');
   input.type = "text";
   input.setAttribute("class", "w3-input w3-border");
-  input.setAttribute('id', 'reqs' + reqs_id);
+  input.setAttribute('id', 'reqt' + reqs_id);
   input.setAttribute('value', reqs_id);
+  input.setAttribute('style', "width:97%");
   var reqs = document.getElementById("reqs");
+  //style="width:100%"
+  //create analize
+  var analize = document.createElement('button');
+  analize.setAttribute('id', 'reqsa' + reqs_id);
+  analize.setAttribute("type", "button");
+  analize.setAttribute("class", "btn btn-info");
+  analize.setAttribute('style', "width:49%");
+  analize.onclick = function() {
+    document.getElementById('reqss' + reqs_id).value = "data";
+  };
+  analize.innerHTML = "analize";
+
   //create remove button
   var remove = document.createElement('button');
   remove.setAttribute('id', 'reqsr' + reqs_id);
-  remove.onclick = function(e) {
-    removeElement(e)
-  };
   remove.setAttribute("type", "button");
-  remove.innerHTML = "Remove" + reqs_id;
+  remove.setAttribute("class", "btn btn-danger");
+  remove.setAttribute('style', "width:49%");
+  remove.onclick = function() {
+  reqs.removeChild(input);
+  reqs.removeChild(analize);
+  reqs.removeChild(remove);
+  reqs_id--;
+  };
+
+  remove.innerHTML = "Remove";
+
   //append elements
   reqs.appendChild(input);
+  reqs.appendChild(analize);
   reqs.appendChild(remove);
 }
 
@@ -49,22 +70,9 @@ var is_method = false;
 var html_code = "";
 var etiquetas_html = [];
 
-//Prueba
-//lexer_analize("int dvar_1,dsi, dswq = + 5 * - 3 + 6; °");
-//print_all_elements(errores_lexicos[0].lexema);
-//print_all_elements(list);
-//parser();
-
-
-function print_word(word)
-{
-	document.write("<b>" + word + "</b><br><br>");
-}
-
 // analisis lexico
-function lexer_analize()
+function lexer_analize(entry)
 {
-    var entry = document.getElementById("traducir").value;
     var row = 0;
     var column = 0;
     var size_entry = entry.length;
