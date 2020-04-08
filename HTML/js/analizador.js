@@ -1,3 +1,36 @@
+var reqs_id = 0;
+
+function removeElement(ev) {
+  var button = ev.target;
+  var field = button.previousSibling;
+  var div = button.parentElement;
+  div.removeChild(button);
+  div.removeChild(field);
+}
+
+function add() {
+  reqs_id++; // increment reqs_id to get a unique ID for the new element
+
+  //create textbox
+  var input = document.createElement('input');
+  input.type = "text";
+  input.setAttribute("class", "w3-input w3-border");
+  input.setAttribute('id', 'reqs' + reqs_id);
+  input.setAttribute('value', reqs_id);
+  var reqs = document.getElementById("reqs");
+  //create remove button
+  var remove = document.createElement('button');
+  remove.setAttribute('id', 'reqsr' + reqs_id);
+  remove.onclick = function(e) {
+    removeElement(e)
+  };
+  remove.setAttribute("type", "button");
+  remove.innerHTML = "Remove" + reqs_id;
+  //append elements
+  reqs.appendChild(input);
+  reqs.appendChild(remove);
+}
+
 var errores_lexicos = [];
 var errores_sintacticos = [];
 var list = [];
@@ -13,6 +46,8 @@ var oper_relationals = ["<", ">", "<=", ">=", "==", "!="];
 var traduccion_without_do = "";
 var bucle = [];
 var is_method = false;
+var html_code = "";
+var etiquetas_html = [];
 
 //Prueba
 //lexer_analize("int dvar_1,dsi, dswq = + 5 * - 3 + 6; °");
@@ -55,6 +90,7 @@ function lexer_analize()
     bucle = [];
     is_method = false;
     errores_sintacticos = [];
+    html_code = "";
 
     var id = "";
     
@@ -499,8 +535,15 @@ function lexer_analize()
                     {
                         var desp = j - i + 2;
                         var insert_v = entry.substr(i-1, desp);
+
+                        if(insert_v.length > 3)
+                        {
+                            //este es un codigo html
+                            html_code += entry.substr(i, desp - 2);
+                        }
+
                         insert_v = insert_v.concat("id");
-                        insert_v = "id".concat("id");
+                        insert_v = "id".concat(insert_v);
                         list.push({lexeme: insert_v, row_l: row, column_l: column});
                         i = i + desp - 1;
                         break;
@@ -572,6 +615,8 @@ function lexer_analize()
             }
     }
     parser();
+    get_html_to_json();
+    var obj = JSON.parse(make_json());
     document.getElementById("traducido").value = traduccion;
 }
 
@@ -857,13 +902,15 @@ function parser()
             for(var i = 0 ; i < list.length ; i++)
             {
                 var actual = list.shift();
-                if(actual.lexeme != "" && actual.lexeme != "")
+                i = -1;
+                if(actual.lexeme != ";" && actual.lexeme != "")
                 {
                     errores_sintacticos.push({lexeme: actual.lexeme, row_l: actual.row_l, column_l: actual.column_l, descripcion: ""});
                 }
                 else
                 {
                     panic_mode_var = false;
+                    break;
                 }
             }
 
@@ -1051,7 +1098,7 @@ function verificate_function()
     }else if(next.lexeme == "main")
     {
         concat_traduccion_aux("\r\ndef ");
-        concat_traduccion_aux(next);
+        concat_traduccion_aux(next.lexeme);
         if(list[0].lexeme == "(")
         {
             list.shift();
@@ -1861,3 +1908,345 @@ function add_tabs(cadena)
 
     return cadena;
 }
+
+function get_html_to_json()
+{
+    etiquetas_html = [];
+    size_html = html_code.length;
+    for(var i = 0; i < html_code.length ; i++)
+    {
+        if(compare_string(html_code.substr(i, size_html), "<html>"))
+        {
+            etiquetas_html.push("<html>");
+            i = i + 5;
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<head>"))
+        {
+            etiquetas_html.push("<head>");
+            i = i + 5;
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<body"))
+        {
+            i = i + 5;
+            var value = "";
+            for(var j = i ; j < size_html ; j++)
+            {
+                if(html_code.charAt(j) == '>')
+                    break;
+                else if(html_code.charAt(j) == '>' )
+                    continue;
+                else
+                    value += html_code.charAt(j);
+            }
+
+            etiquetas_html.push("<body>");
+            if(value != "")
+            {
+                // nedd to read style
+                for(var j = 0 ; j < value.length ; j++)
+                {
+                    if(value.substr(j, 5) == "style")
+                    {
+                        etiquetas_html.push("\"style\"");
+                        j = j + 5;
+                    }
+                    else if(value.charAt(j) == '"' )
+                    {
+                        j++;
+                        for(var k = j ; k < value.length ; k++)
+                        {
+                            if(value.charAt(k) == '"')
+                            {
+                                var desp = k - j + 2;
+                                var insert_v = value.substr(j-1, desp);
+                                etiquetas_html.push(insert_v);
+                                i = i + k-1;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<div"))
+        {
+            i = i + 4;
+            var value = "";
+            for(var j = i ; j < size_html ; j++)
+            {
+                if(html_code.charAt(j) == '>')
+                    break;
+                else if(html_code.charAt(j) == '>' )
+                    continue;
+                else
+                    value += html_code.charAt(j);
+            }
+
+            etiquetas_html.push("<div>");
+            if(value != "")
+            {
+                // nedd to read style
+                for(var j = 0 ; j < value.length ; j++)
+                {
+                    if(value.substr(j, 5) == "style")
+                    {
+                        etiquetas_html.push("\"style\"");
+                        j = j + 5;
+                    }
+                    else if(value.charAt(j) == '"' )
+                    {
+                        j++;
+                        for(var k = j ; k < value.length ; k++)
+                        {
+                            if(value.charAt(k) == '"')
+                            {
+                                var desp = k - j + 2;
+                                var insert_v = value.substr(j-1, desp);
+                                etiquetas_html.push(insert_v);
+                                i = i + k-1;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<title>"))
+        {
+            etiquetas_html.push("<title>");
+            i = i + 7;
+            for(var j = i ; j < size_html ; j++ )
+            {
+                if(html_code.charAt(j) == '<')
+                {
+                    var text = html_code.substr(i, j-i);
+                    if(text.length > 0)
+                        etiquetas_html.push(add_comillas(text));
+                    i = j;
+                    break;
+                }
+            }
+            if(compare_string(html_code.substr(i, size_html), "</title>"))
+            {
+                etiquetas_html.push("</title>");
+                i = i + 7;
+            }
+        }
+        else if(compare_string(html_code.substr(i, size_html), "</html>"))
+        {
+            etiquetas_html.push("</html>");
+            i = i + 6;
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<p>"))
+        {
+            etiquetas_html.push("<p>");
+            i = i + 3;
+            for(var j = i ; j < size_html ; j++ )
+            {
+                if(html_code.charAt(j) == '<')
+                {
+                    var text = html_code.substr(i, j-i);
+                    if(text.length > 0)
+                        etiquetas_html.push(add_comillas(text));
+                    i = j;
+                    break;
+                }
+            }
+            if(compare_string(html_code.substr(i, size_html), "</p>"))
+            {
+                etiquetas_html.push("</p>");
+                i = i + 3;
+            }
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<input>"))
+        {
+            etiquetas_html.push("<input>");
+            i = i + 6;
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<h1>"))
+        {
+            etiquetas_html.push("<h1>");
+            i = i + 4;
+            for(var j = i ; j < size_html ; j++ )
+            {
+                if(html_code.charAt(j) == '<')
+                {
+                    var text = html_code.substr(i, j-i);
+                    if(text.length > 0)
+                        etiquetas_html.push(add_comillas(text));
+                    i = j;
+                    break;
+                }
+            }
+            if(compare_string(html_code.substr(i, size_html), "</h1>"))
+            {
+                etiquetas_html.push("</h1>");
+                i = i + 4;
+            }
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<label>"))
+        {
+            etiquetas_html.push("<label>");
+            i = i + 7;
+            for(var j = i ; j < size_html ; j++ )
+            {
+                if(html_code.charAt(j) == '<')
+                {
+                    var text = html_code.substr(i, j-i);
+                    if(text.length > 0)
+                        etiquetas_html.push(add_comillas(text));
+                    i = j;
+                    break;
+                }
+            }
+            if(compare_string(html_code.substr(i, size_html), "</label>"))
+            {
+                etiquetas_html.push("</label>");
+                i = i + 6;
+            }
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<br>"))
+        {
+            etiquetas_html.push("<br>");
+            i = i + 3;
+        }
+        else if(compare_string(html_code.substr(i, size_html), "<button>"))
+        {
+            etiquetas_html.push("<button>");
+            i = i + 8;
+            for(var j = i ; j < size_html ; j++ )
+            {
+                if(html_code.charAt(j) == '<')
+                {
+                    var text = html_code.substr(i, j-i);
+                    if(text.length > 0)
+                        etiquetas_html.push(add_comillas(text));
+                    i = j;
+                    break;
+                }
+            }
+            if(compare_string(html_code.substr(i, size_html), "</button>"))
+            {
+                etiquetas_html.push("</button>");
+                i = i + 8;
+            }
+        }
+        else if(compare_string(html_code.substr(i, size_html), "</body>"))
+        {
+            etiquetas_html.push("</body>");
+            i = i + 6;
+        }
+        else if(compare_string(html_code.substr(i, size_html), "</div>"))
+        {
+            etiquetas_html.push("</div>");
+            i = i + 4;
+        }
+        else if(compare_string(html_code.substr(i, size_html), "</head>"))
+        {
+            etiquetas_html.push("</head>");
+            i = i + 6;
+        }            
+    }
+}
+
+function make_json()
+{
+    tabs = [];
+    tabs.push("first");
+    var json = "{\r\n";
+    for(var i = 0 ; i < etiquetas_html.length ; i++)
+    {
+        var et_actual = etiquetas_html.shift();
+        i = -1;
+        if(et_actual.charAt(0) == '<' && et_actual.charAt(1) != '/')
+        {
+            var new_element_json = "\r\n"
+            new_element_json += delete_et(et_actual);
+            new_element_json += ":{" 
+            new_element_json = add_tabs(new_element_json);
+            tabs.push(et_actual);
+
+            if(et_actual == "<input>" || et_actual == "<br>")
+            {
+                tabs.pop();
+                var auxd = "\r\n}";
+                auxd = add_tabs(auxd);
+                json += new_element_json;
+                json += auxd;
+                if(etiquetas_html.length > 0 && etiquetas_html[0].substr(0,2) != "</")
+                    json += ",";
+                continue;
+            }
+
+            if(etiquetas_html[0].charAt(0) == '"' && etiquetas_html[1].charAt(0) != '"')
+            {
+                var aux2 = "\r\n\"TEXTO\":";
+                et_actual = etiquetas_html.shift();
+
+                aux2 += et_actual;
+                aux2 = add_tabs(aux2);
+
+                json += new_element_json;
+                json += aux2;
+                if(etiquetas_html.length > 0 && etiquetas_html[0].substr(0,2) != "</")
+                    json += ",";
+                continue;
+            }
+
+            json += new_element_json;
+        }
+        else if(et_actual.charAt(0) == '<' && et_actual.charAt(1) == '/')
+        {
+            tabs.pop();
+            var new_element_json = "\r\n}";
+            if(etiquetas_html.length > 0 && etiquetas_html[0].substr(0,2) != "</")
+                new_element_json += ",";
+            new_element_json = add_tabs(new_element_json);
+            json += new_element_json;
+        }
+        else if(et_actual.charAt(0) == '"')
+        {
+            var new_element_json = "\r\n"
+            new_element_json += et_actual;
+            new_element_json += ":";
+            et_actual = etiquetas_html.shift();
+            if(et_actual.charAt(0) == '"')
+            {
+                new_element_json += et_actual;
+                if(etiquetas_html.length > 0 && etiquetas_html[0].substr(0,2) != "</")
+                    new_element_json += ",";
+            }else
+                etiquetas_html.unshift(et_actual);
+            new_element_json = add_tabs(new_element_json);
+            json += new_element_json;
+        }
+    }
+    json += "\r\n}"
+    return json;
+}
+
+function delete_et(element)
+{
+    if(element.charAt(0) == '<' && element.charAt(element.length -1) == '>')
+    {
+        var aux = "\"";
+        aux += element.substr(1, element.length -2);
+        aux += "\"";
+        return aux;
+    }
+    else
+        return element;
+    
+}
+
+function add_comillas(element)
+{
+    var aux = "\"";
+    aux += element;
+    aux += "\"";
+    return aux;
+}
+
+
