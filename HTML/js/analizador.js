@@ -41,7 +41,7 @@ function add() {
   descargar.setAttribute('style', "width:32%");
   descargar.onclick = function() {
     var texto = document.getElementById('reqt' + reqs_id).value;
-    download(texto, "entrada", "txt");
+    download("Entrada"+ reqs_id +".txt", texto);
   };
   descargar.innerHTML = "Download";
 
@@ -85,23 +85,18 @@ document.getElementById('fileInput').addEventListener('change', function selecte
     reader.readAsText(this.files[0]);
   });
 
-function download(data, filename, type) {
-    var file = new Blob([data], {type: type});
-    if (window.navigator.msSaveOrOpenBlob) // IE10+
-        window.navigator.msSaveOrOpenBlob(file, filename);
-    else { // Others
-        var a = document.createElement("a"),
-                url = URL.createObjectURL(file);
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);  
-        }, 0); 
-    }
-}
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }
 
 function add_to_table(lexeme, column , row){
 
@@ -743,7 +738,10 @@ function parser()
             {
                 analice_declaration();
                 if(panic_mode_var)
+                {
+                    aux_traduccion = "";
                     continue;
+                }
                 //print_word(aux_traduccion);
                 for(var i = 0 ; i < tabs.length ; i++)
                 {
@@ -757,7 +755,10 @@ function parser()
                 //Se define una funcion
                 verificate_function();
                 if(panic_mode_var)
+                {
+                    aux_traduccion = "";
                     continue;
+                }
                 concat_traduccion(aux_traduccion);
                 aux_traduccion = "";
                 method_s = true;
@@ -793,7 +794,10 @@ function parser()
             else
                 verificate_function();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 continue;
+            }
             concat_traduccion(aux_traduccion);
             aux_traduccion = "";
             method_s = true;
@@ -813,7 +817,10 @@ function parser()
             //function if
             sent_if();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 continue;
+            }
 
             if(list[0].lexeme != "{")
             {
@@ -821,9 +828,10 @@ function parser()
                 errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
                 continue;
             }else
-                    list.shift();
+                list.shift();
             concat_traduccion(aux_traduccion);
             aux_traduccion = "";
+            tabs.push("if");
 
             d = -1;
         }else if (list[0].lexeme == "switch" && panic_mode_var == false && method_s == true)
@@ -831,7 +839,10 @@ function parser()
             //function switch
             sent_switch();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 continue;
+            }
 
             if(list[0].lexeme != "}")
             {
@@ -851,7 +862,10 @@ function parser()
             //function for
             sent_for();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 continue;
+            }
 
             if(list[0].lexeme != "{")
             {
@@ -861,8 +875,7 @@ function parser()
             }else
                 list.shift();
             
-            if(sent_do == false)
-                concat_traduccion(aux_traduccion);
+            concat_traduccion(aux_traduccion);
             aux_traduccion = "";
             bucle.push("for");
 
@@ -873,7 +886,10 @@ function parser()
             //function while
             sent_while();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 continue;
+            }
 
             if(list[0].lexeme != "{")
             {
@@ -886,14 +902,14 @@ function parser()
             concat_traduccion(aux_traduccion);
             bucle.push("while");
             aux_traduccion = "";
-            buble.push("while");
+            tabs.push("while");
 
             d = -1;
         }
         else if (list[0].lexeme == "do" && panic_mode_var == false && method_s == true)
         {
             //function do while
-            traduccion_without_do += traduccion;
+            traduccion_without_do = traduccion;
             list.shift();
 
             if(list[0].lexeme != "{")
@@ -904,29 +920,38 @@ function parser()
             }else
                 list.shift();
 
-            concat_traduccion_aux("\r\nwhile True:")
+            var dd = "\r\nwhile True:";
+            dd = add_tabs(dd);
+            concat_traduccion(dd)
             tabs.push("do_while");
             bucle.push("do_while");
             sent_do = true;
 
             d = -1;
         }
-        else if (list[0].lexeme == "return" && panic_mode_var == false )
+        else if (list[0].lexeme == "return" && panic_mode_var == false && method_s == true)
         {
             //return
-            sent_return(is_method);
+            var ret = sent_return(is_method);
+            ret = add_tabs(ret);
+            concat_traduccion(ret);
             d = -1;
         }
         else if (list[0].lexeme == "continue" && panic_mode_var == false && bucle.length > 0)
         {
             //continue
-            sent_continue();
+            var continu = sent_continue();
+            continu = add_tabs(continu);
+            concat_traduccion(continu);
             d = -1;
         }
         else if (list[0].lexeme == "break" && panic_mode_var == false && bucle.length > 0)
         {
             //break
-            sent_break();
+            var brea = sent_break();
+            brea = add_tabs(brea);
+            concat_traduccion(brea);
+
             d = -1;
         }
         else if (list[0].lexeme == "Console.Write" && panic_mode_var == false && method_s == true)
@@ -942,7 +967,7 @@ function parser()
             list.shift(); 
             if(tabs[tabs.length -1] == "funcion" ||  tabs[tabs.length -1] == "main")
                 method_s = false;
-            else if(tabs[tabs.length - 1].lexeme == "do_while")
+            else if(tabs[tabs.length - 1] == "do_while")
             {
 
                 if(list[0].lexeme != "while")
@@ -951,60 +976,43 @@ function parser()
                     panic_mode_var = true;
                     continue;
                 }else
-                    list.shift();
-
-                if(list[0].lexeme != "(")
-                {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
-                    panic_mode_var = true;
-                    continue;
-                }else
-                    list.shift();
-
-
-                var n1 = get_unario_number();
-                if(panic_mode_var)
-                    continue;
-
-                if(list[0].lexeme != "<")
-                {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '<' se encontro:" + list[0].lexema});
-                    panic_mode_var = true;
-                    continue;
-                }else
-                    list.shift();
-
-                var n2 = get_unario_number();
-                if(panic_mode_var)
-                    continue;
-
-                concat_traduccion_aux("if ");
-                concat_traduccion_aux(n1);
-                concat_traduccion_aux(" < ");
-                concat_traduccion_aux(n2);
-                if(list[0].lexeme != ")")
-                {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexema});
-                    panic_mode_var = true;
-                    continue;
-                }else
                 {
                     list.shift();
-                }
+                    if(list[0].lexeme == "(")
+                    {
+                        list.shift();
+                        // definir condiciones
+                        concat_traduccion_aux("\r\nif ");
+                        verificate_conditions();
+                    }else
+                    {
+                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+                        panic_mode_var = true;
+                        return;
+                    }
 
-                if(list[0].lexeme != ";")
-                {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
-                    panic_mode_var = true;
-                    continue;
-                }else
-                {
-                    list.shift();
-                    tabs.pop();
-                    concat_traduccion_aux(" :");
-                    concat_traduccion_aux("\r\nbreak");
-                    aux_traduccion = add_tabs(aux_traduccion);
-                    continue;
+                    if(panic_mode_var)
+                    {
+                        aux_traduccion = "";
+                        continue;
+                    }
+        
+                    if(list[0].lexeme != ";")
+                    {
+                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
+                        panic_mode_var = true;
+                        continue;
+                    }else
+                    {
+                        list.shift();
+                        var bb = "\r\n\tbreak";
+                        bb = add_tabs(bb);
+                        concat_traduccion_aux(bb);
+                        concat_traduccion(aux_traduccion);
+                        aux_traduccion = "";
+                        tabs.pop();
+                        continue;
+                    }      
                 }
             }
             d = -1;
@@ -1024,7 +1032,7 @@ function parser()
             if(traduccion_without_do != "")
             {
                 traduccion = "";
-                traduccion += traduccion_without_do;
+                traduccion = traduccion_without_do;
                 traduccion_without_do = "";
             }
 
@@ -1032,17 +1040,24 @@ function parser()
             {
                 var actual = list.shift();
                 i = -1;
-                if(actual.lexeme != ";" && actual.lexeme != "}")
-                {
-                    errores_sintacticos.push({lexeme: actual.lexeme, row_l: actual.row_l, column_l: actual.column_l, descripcion: "Se esperaba '}' o ';' para salir del modo panico"});
-                }
-                else
+                if(actual.lexeme == ";" || actual.lexeme == "}")
                 {
                     panic_mode_var = false;
                     break;
                 }
+                else
+                {
+                    errores_sintacticos.push({lexeme: actual.lexeme, row_l: actual.row_l, column_l: actual.column_l, descripcion: "Se esperaba '}' o ';' para salir del modo panico"});
+                }
             }
 
+            d = -1;
+        }
+        else
+        {
+            panic_mode_var = true;
+            if(method_s == false)
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba la declaracion de una funcion o metodo para poder traducir el siguiente lexema:" + list[0].lexeme});
             d = -1;
         }
 
@@ -1093,7 +1108,10 @@ function analice_declaration()
                 //asignar
                 var number = get_unario_number();
                 if(panic_mode_var)
+                {
+                    aux_traduccion = "";
                     return;
+                }
                 var next = list.shift();
                 if(next.lexeme == ";")
                 {
@@ -1116,7 +1134,10 @@ function analice_declaration()
                     var description = verificate_operation(true);
 
                     if(panic_mode_var)
+                    {
+                        aux_traduccion = "";
                         return;
+                    }
                         
                     for(var j = 0; j < list_vars.length; j++)
                     {
@@ -1155,7 +1176,10 @@ function verificate_operation(declarations)
             description = description.concat(operator.lexeme);
             var number2 = get_unario_number();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 return;
+            }
             set_unario_number(number2);
             i = 0;
             continue;
@@ -1297,7 +1321,15 @@ function get_parameters()
 
                     var is_another_par = list.shift();
                     if(is_another_par.lexeme == ",")
+                    {
+                        if(!verificate_type(list[0].lexeme))
+                        {
+                            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'otro typo de parametro' se encontro:" + list[0].lexema});
+                            panic_mode_var = true;
+                            return;
+                        }
                         continue;
+                    }
                     else if(is_another_par.lexeme == ")")
                     {
                         for(var j = 0 ; j < list_vars.length ; j++)
@@ -1384,7 +1416,10 @@ function verificate_conditions()
             //todas las funciones van a ser pruebas
             var number = get_unario_number();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 return;
+            }
             else
             {
                 // comprobar si es comparacion directa o hay una operacion
@@ -1397,7 +1432,10 @@ function verificate_conditions()
                     //ejecutar analisis de operacion
                     var op = verificate_operation(false);
                     if(panic_mode_var)
+                    {
+                        aux_traduccion = "";
                         return;
+                    }
                     concat_traduccion_aux(op);
                     
                     var op_rel = list.shift()
@@ -1421,8 +1459,10 @@ function verificate_conditions()
                         concat_traduccion_aux(aux_op);
                         number = get_unario_number();
                         if(panic_mode_var)
+                        {
+                            aux_traduccion = "";
                             return;
-
+                        }
                         simbol = list.shift();
                         if(simbol.lexeme.charAt(0) == "+" || simbol.lexeme.charAt(0) == "-" || simbol.lexeme.charAt(0) == "*" || simbol.lexeme.charAt(0) == "/")
                         {
@@ -1431,12 +1471,17 @@ function verificate_conditions()
                             //ejecutar analisis de operacion
                             var op = verificate_operation(false);
                             if(panic_mode_var)
+                            {
+                                aux_traduccion = "";
                                 return;
+                            }
                             concat_traduccion_aux(op);
                         }else if(simbol.lexeme == ")")
                         {
-                            //Finalizaron las condiciones
                             concat_traduccion_aux(number.lexeme);
+                            //Finalizaron las condiciones
+                            concat_traduccion_aux(" :");
+                            aux_traduccion = add_tabs(aux_traduccion);
                             return;
                         }else
                         {
@@ -1449,6 +1494,62 @@ function verificate_conditions()
                     }
 
 
+                }else
+                {
+                    concat_traduccion_aux(number.lexeme);
+                    var aux_op = "";
+                    for(var j = 0 ; j < oper_relationals.length ; j++)
+                    {
+                        if(simbol.lexeme == oper_relationals[j])
+                        {
+                            aux_op = simbol.lexeme;
+                            break;
+                        }
+                    }
+                    if(aux_op == "")
+                    {
+                        //tendria que venir un operador relacional
+                        errores_sintacticos.push({lexeme: op_rel.lexeme, row_l: op_rel.row_l, column_l: op_rel.column_l, descripcion: "Se esperaba un operador logico se encontro:" + op_rel.lexema});
+                        panic_mode_var = true;
+                        return;
+                    }else
+                    {
+                        concat_traduccion_aux(aux_op);
+                        number = get_unario_number();
+                        if(panic_mode_var)
+                        {
+                            aux_traduccion = "";
+                            return;
+                        }
+                        simbol = list.shift();
+                        if(simbol.lexeme.charAt(0) == "+" || simbol.lexeme.charAt(0) == "-" || simbol.lexeme.charAt(0) == "*" || simbol.lexeme.charAt(0) == "/")
+                        {
+                            list.unshift(simbol);
+                            set_unario_number(number);
+                            //ejecutar analisis de operacion
+                            var op = verificate_operation(false);
+                            if(panic_mode_var)
+                            {
+                                aux_traduccion = "";
+                                return;
+                            }
+                            concat_traduccion_aux(op);
+                        }else if(simbol.lexeme == ")")
+                        {
+                            concat_traduccion_aux(number.lexeme);
+                            //Finalizaron las condiciones
+                            concat_traduccion_aux(" :");
+                            aux_traduccion = add_tabs(aux_traduccion);
+                            return;
+                        }else
+                        {
+                            errores_sintacticos.push({lexeme: simbol.lexeme, row_l: simbol.row_l, column_l: simbol.column_l, descripcion: "Se esperaba un ')' u otra condicion se encontro:" + simbol.lexema});
+                            //tendria que venir un otro operador
+                            panic_mode_var = true;
+                            return;
+                        }
+                        is_another_con = true;
+                    }
                 }
             }
         }
@@ -1468,7 +1569,6 @@ function verificate_conditions()
                 //Finalizaron las condiciones
                 concat_traduccion_aux(" :");
                 aux_traduccion = add_tabs(aux_traduccion);
-                tabs.push("if")
                 return;
             }else
             {
@@ -1496,7 +1596,10 @@ function sent_switch()
         list.shift();
         var number = get_unario_number();
         if(panic_mode_var)
+        {
+            aux_traduccion = "";
             return;
+        }
         concat_traduccion_aux("\r\ndef switch(case, ");
         aux_traduccion = add_tabs(aux_traduccion);
         tabs.push("switch");
@@ -1545,7 +1648,10 @@ function sent_switch()
             if(cases != "default")
                 number1 = get_unario_number();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 return;
+            }
 
             if(list[0].lexeme == ":")
                 list.shift();
@@ -1570,7 +1676,10 @@ function sent_switch()
                 var n = get_unario_number();
                 dato = n.lexeme;
                 if(panic_mode_var)
+                {
+                    aux_traduccion = "";
                     return;
+                }
 
                 if(list[0].lexeme == "=")
                     list.shift();
@@ -1704,12 +1813,16 @@ function sent_for()
 
     if(list[0].lexeme == "int")
     {
+        list.shift();
         concat_traduccion_aux("\r\nfor ");
         var n_var = get_unario_number();
         if(panic_mode_var)
+        {
+            aux_traduccion = "";
             return;
+        }
 
-        concat_traduccion_aux(n_var);
+        concat_traduccion_aux(n_var.lexeme);
         concat_traduccion_aux(" in range(");
         
         if(list[0].lexeme == "=")
@@ -1717,7 +1830,10 @@ function sent_for()
             list.shift();
             var number = get_unario_number();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 return;
+            }
             
             concat_traduccion_aux(number.lexeme++);
             concat_traduccion_aux(", ");
@@ -1733,7 +1849,10 @@ function sent_for()
 
             get_unario_number();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 return;
+            }
             if(list[0].lexeme == "<")
                 list.shift();
             else
@@ -1745,7 +1864,10 @@ function sent_for()
 
             var number2 = get_unario_number();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 return;
+            }
             
             concat_traduccion_aux(number2.lexeme);
 
@@ -1760,7 +1882,10 @@ function sent_for()
 
             get_unario_number();
             if(panic_mode_var)
+            {
+                aux_traduccion = "";
                 return;
+            }
 
             if(list[0].lexeme == "++")
                 list.shift();
@@ -1806,47 +1931,20 @@ function sent_for()
 //definir while
 function sent_while()
 {
-    list.shift();
 
-    if(list[0].lexeme != "(")
+    list.shift();
+    if(list[0].lexeme == "(")
+    {
+        list.shift();
+        // definir condiciones
+        concat_traduccion_aux("\r\nwhile ");
+        verificate_conditions();
+    }else
     {
         errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
         panic_mode_var = true;
-            return;
-    }else
-        list.shift();
-
-    var n1 = get_unario_number();
-    if(panic_mode_var)
         return;
-
-    if(list[0].lexeme != "<")
-    {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '<' se encontro:" + list[0].lexema});
-        panic_mode_var = true;
-            return;
-    }else
-        list.shift();
-
-    var n2 = get_unario_number();
-    if(panic_mode_var)
-        return;
-
-    concat_traduccion_aux("while ");
-    concat_traduccion_aux(n1);
-    concat_traduccion_aux(" < ");
-    concat_traduccion_aux(n2);
-    if(list[0].lexeme != ")")
-    {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexema});
-        panic_mode_var = true;
-            return;
-    }else
-        list.shift();
-    concat_traduccion_aux(" :");
-    aux_traduccion = add_tabs(aux_traduccion);
-    tabs.push("while");
-    return;
+    }
 }
 
 //console write
@@ -1876,7 +1974,10 @@ function console_write()
                 description = description.concat(", ");
                 var number2 = get_unario_number();
                 if(panic_mode_var)
+                {
+                    aux_traduccion = "";
                     return;
+                }
                 set_unario_number(number2);
                 i = 0;
                 continue;
@@ -1918,11 +2019,13 @@ function sent_return(is_void)
     {
         var op = verificate_operation(true);
         if(panic_mode_var)
+        {
+            aux_traduccion = "";
             return;
-        concat_traduccion_aux("return ");
-        concat_traduccion_aux(op);
-        aux_traduccion = add_tabs(aux_traduccion);
-        return
+        }
+        var ret = "return ";
+        ret += op;
+        return ret;
     }
 }
 
@@ -2472,11 +2575,11 @@ function create_report_errores()
         error = errores_sintacticos[i];
         //{lexema: ac, fila: row, columna: column};
         html += "<tr>\r\n";
-        html += "<td>"+ number +"</td>\r\n";
+        html += "<td>" + number + "</td>\r\n";
         html += "<td>Error Sintactico</td>\r\n";
-        html += "<td>"+ error.row +"</td>\r\n";
-        html += "<td>"+ error.column +"</td>\r\n";
-        html += "<td>El carácter ‘"+ error.lexema +"’ no pertenece al lenguaje.</td>\r\n";
+        html += "<td>" + error.row_l + "</td>\r\n";
+        html += "<td>" + error.column_l + "</td>\r\n";
+        html += "<td>" + error.descripcion + "</td>\r\n";
         html += "</tr>\r\n";
         number++;
     }
@@ -2486,12 +2589,29 @@ function create_report_errores()
 
     html += "</body>";
     html += "</html>";
+    download("Errores.html", html);
 }
 
 function create_report_json()
 {
     if(json_string.length > 0)
     {
+        download("reporte_json.json", json_string);
+    } 
+}
 
+function create_report_html()
+{
+    if(html_code.length > 0)
+    {
+        download("reporte_html.html", html_code);
+    } 
+}
+
+function create_report_Translation()
+{
+    if(traduccion.length > 0)
+    {
+        download("reporte_traduccion.py", traduccion);
     } 
 }
