@@ -125,6 +125,12 @@ var is_method = false;
 var html_code = "";
 var etiquetas_html = [];
 var json_string = "";
+var number_case = -1;
+var s_switch = [];
+var assign_sw = false;
+var vars_switch = [];
+var add_def_s = [];
+var arr_vars_switch = [];
 
 // analisis lexico
 function lexer_analize(entry)
@@ -156,6 +162,12 @@ function lexer_analize(entry)
     errores_sintacticos = [];
     html_code = "";
     json_string = "";
+    number_case = -1;
+    s_switch = [];
+    assign_sw = false;
+    vars_switch = [];
+    add_def_s = [];
+    arr_vars_switch = [];
 
     var id = "";
     
@@ -736,6 +748,7 @@ function parser()
         {
             if(list[2].lexeme == "=" || list[2].lexeme == ";" || list[2].lexeme == ",")
             {
+                list.shift();
                 analice_declaration();
                 if(panic_mode_var)
                 {
@@ -743,13 +756,10 @@ function parser()
                     continue;
                 }
                 //print_word(aux_traduccion);
-                for(var i = 0 ; i < tabs.length ; i++)
-                {
-                    aux_traduccion = add_tabs(aux_traduccion);
-                }
+                aux_traduccion = add_tabs(aux_traduccion);
                 concat_traduccion(aux_traduccion);
                 aux_traduccion = "";
-                document.getElementById("traducido").value = traduccion;
+                ///document.getElementById("traducido").value = traduccion;
             }else if(list[2].lexeme == "(" && method_s == false)
             {
                 //Se define una funcion
@@ -771,7 +781,8 @@ function parser()
                     list.shift();
             }
             d = -1;
-        }else if (compare_string((list[0].lexeme), "\"\"\"") || list[0].lexeme.charAt(0) == '#' && panic_mode_var == false)
+        }
+        else if (compare_string((list[0].lexeme), "\"\"\"") || list[0].lexeme.charAt(0) == '#' && panic_mode_var == false)
         {
             // commentarios
             var comentario = "\r\n"; 
@@ -780,11 +791,12 @@ function parser()
             concat_traduccion(comentario);
 
             d = -1;
-        }else if (list[0].lexeme == "void" && panic_mode_var == false && method_s == false)
+        }
+        else if (list[0].lexeme == "void" && panic_mode_var == false && method_s == false)
         {
             // se termina la indentacion sacar un elemento de tabs
 
-            if(list[1].lexeme == "main" && method_main_f == false)
+            if(list[1].lexeme == "main" )
             {
                 //definicion del metodo main
                 method_main = true;
@@ -812,7 +824,8 @@ function parser()
             is_method = true;
 
             d = -1;
-        }else if (list[0].lexeme == "if" && panic_mode_var == false && method_s == true)
+        }
+        else if (list[0].lexeme == "if" && panic_mode_var == false && method_s == true)
         {
             //function if
             sent_if();
@@ -834,8 +847,15 @@ function parser()
             tabs.push("if");
 
             d = -1;
-        }else if (list[0].lexeme == "switch" && panic_mode_var == false && method_s == true)
+        }
+        else if (list[0].lexeme == "switch" && panic_mode_var == false && method_s == true)
         {
+            if(vars_switch.length > 0)
+            {
+                arr_vars_switch.push(vars_switch);
+                vars_switch = [];
+            }
+            add_def_s.push(traduccion.length);
             //function switch
             sent_switch();
             if(panic_mode_var)
@@ -844,6 +864,47 @@ function parser()
                 continue;
             }
 
+            //primer case
+            var aux_cases = "\r\n";
+            var cases = "";
+            if(list[0].lexeme == "case" || list[0].lexeme == "default")
+                cases = list.shift().lexeme;
+            else
+            {
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'case' se encontro:" + list[0].lexema});
+                panic_mode_var = true;
+                return;
+            }
+
+            if(cases != "default")
+                number_case = get_unario_number();
+            if(panic_mode_var)
+            {
+                aux_traduccion = "";
+                return;
+            }
+
+            if(list[0].lexeme == ":")
+                list.shift();
+            else
+            {
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ':' se encontro:" + list[0].lexema});
+                panic_mode_var = true;
+                return;
+            }
+
+            if(cases != "default")
+                aux_cases = aux_cases.concat(number_case.lexeme);
+            else
+                aux_cases = aux_cases.concat(++number_case.lexeme);
+            aux_cases = aux_cases.concat(": ");
+
+            aux_cases = add_tabs(aux_cases);
+            tabs.push("case");
+            concat_traduccion(aux_cases);
+            s_switch.push("switch");
+
+            /*
             if(list[0].lexeme != "}")
             {
                 panic_mode_var = true;
@@ -854,7 +915,73 @@ function parser()
 
             concat_traduccion(aux_traduccion);
             aux_traduccion = "";
-            
+            */
+            d = -1;
+        }
+        else if (list[0].lexeme == "case" || list[0].lexeme == "default" && panic_mode_var == false && method_s == true && s_switch.length > 0)
+        {
+            //primer case
+            var aux_cases = "\r\n";
+            var cases = "";
+            cases = list.shift().lexeme;
+
+            if(cases != "default")
+                number_case = get_unario_number();
+            if(panic_mode_var)
+            {
+                aux_traduccion = "";
+                return;
+            }
+
+            if(list[0].lexeme == ":")
+                list.shift();
+            else
+            {
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ':' se encontro:" + list[0].lexema});
+                panic_mode_var = true;
+                return;
+            }
+
+            if(cases != "default")
+                aux_cases = aux_cases.concat(number_case.lexeme);
+            else
+                aux_cases = aux_cases.concat(++number_case.lexeme);
+            aux_cases = aux_cases.concat(": ");
+
+            tabs.pop();
+            aux_cases = add_tabs(aux_cases);
+            tabs.push("case");
+            concat_traduccion(",");
+            concat_traduccion(aux_cases);
+
+            /*
+            if(list[0].lexeme != "}")
+            {
+                panic_mode_var = true;
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '}' se encontro:" + list[0].lexema});
+                continue;
+            }else
+                list.shift();
+
+            concat_traduccion(aux_traduccion);
+            aux_traduccion = "";
+            */
+            d = -1;
+        }
+        else if (verificate_id(list[0]) && panic_mode_var == false && method_s == true)
+        {
+            //primer case
+            assign_sw = true;
+            analice_declaration();
+            assign_sw = false;
+            if(panic_mode_var)
+            {
+                aux_traduccion = "";
+                continue;
+            }
+            aux_traduccion = add_tabs(aux_traduccion);
+            concat_traduccion(aux_traduccion);
+            aux_traduccion = "";
             d = -1;
         }
         else if (list[0].lexeme == "for" && panic_mode_var == false && method_s == true)
@@ -932,7 +1059,8 @@ function parser()
         else if (list[0].lexeme == "return" && panic_mode_var == false && method_s == true)
         {
             //return
-            var ret = sent_return(is_method);
+            var ret = "\r\n";
+            ret += sent_return(is_method);
             ret = add_tabs(ret);
             concat_traduccion(ret);
             d = -1;
@@ -940,15 +1068,17 @@ function parser()
         else if (list[0].lexeme == "continue" && panic_mode_var == false && bucle.length > 0)
         {
             //continue
-            var continu = sent_continue();
+            var continu = "\r\n";
+            continu += sent_continue();
             continu = add_tabs(continu);
             concat_traduccion(continu);
             d = -1;
         }
-        else if (list[0].lexeme == "break" && panic_mode_var == false && bucle.length > 0)
+        else if (list[0].lexeme == "break" && panic_mode_var == false && (bucle.length > 0 || s_switch.length > 0))
         {
             //break
-            var brea = sent_break();
+            var brea = "\r\n"; 
+            brea += sent_break();
             brea = add_tabs(brea);
             concat_traduccion(brea);
 
@@ -966,7 +1096,11 @@ function parser()
             // se termina la indentacion sacar un elemento de tabs
             list.shift(); 
             if(tabs[tabs.length -1] == "funcion" ||  tabs[tabs.length -1] == "main")
+            {
                 method_s = false;
+                if(tabs[tabs.length -1] == "main")
+                    method_main = false;
+            }
             else if(tabs[tabs.length - 1] == "do_while")
             {
 
@@ -1014,6 +1148,58 @@ function parser()
                         continue;
                     }      
                 }
+            }
+            else if(s_switch.length > 0 && tabs[tabs.length -1] == "case")
+            {
+                if(vars_switch.length > 0)
+                {
+                    arr_vars_switch.push(vars_switch);
+                    vars_switch = [];
+                }
+
+                var size_t = traduccion_without_do.length;
+                if(tabs[tabs.length -1] == "case")
+                    tabs.pop();
+                if(tabs[tabs.length -1] == "switcher")
+                    tabs.pop();
+                if(tabs[tabs.length -1] == "switch")
+                    tabs.pop();
+
+                var ss = "\r\ndef switch(case, ";
+                
+                if(arr_vars_switch.length > 0)
+                {
+                    var aux_arr = arr_vars_switch.pop();
+                    if(aux_arr.length > 0)
+                    {
+                        ss += aux_arr[0].lexeme;
+                        for(var i = 1 ; i < aux_arr.length ; i++)
+                        {
+                            ss += ", ";
+                            ss += aux_arr[i].lexeme;
+                        }
+    
+                    }
+                    if(arr_vars_switch.length > 0)
+                        vars_switch = arr_vars_switch.pop();
+                }
+
+
+                ss += "):";
+                var cierre = ",\r\n}"
+                cierre = add_tabs(cierre);
+                ss = add_tabs(ss);
+
+                var tam = add_def_s.pop();
+                var auxt = traduccion.substr(0, tam)
+                var auxtt = traduccion.substr(tam, traduccion.length);
+                auxt += ss;
+                traduccion = auxt + auxtt;
+                concat_traduccion(cierre);
+                traduccion_without_do = "";
+                s_switch.pop();
+                d = -1; 
+                continue;
             }
             d = -1;
             if(tabs.length > 0);
@@ -1066,10 +1252,10 @@ function parser()
     
 }
 
-//function para analizar una asignacion
+
+//function para analizar una declaracion
 function analice_declaration()
 {
-    list.shift();
     var list_vars = [];
 
     for(var i = 0 ; i < list.length ; i++)
@@ -1078,7 +1264,9 @@ function analice_declaration()
         i = -1;
         if(verificate_id(next))
         {
-        	next = get_id(next);
+            next = get_id(next);
+            if(assign_sw == true)
+                vars_switch.push(next);
             if(next.lexeme.charAt(0) >= 0 && next.lexeme.charAt(0) <= 9)
             {
                 //Es un numero no identificador
@@ -1600,8 +1788,8 @@ function sent_switch()
             aux_traduccion = "";
             return;
         }
-        concat_traduccion_aux("\r\ndef switch(case, ");
-        aux_traduccion = add_tabs(aux_traduccion);
+        //concat_traduccion_aux("\r\ndef switch(case, ");
+        //aux_traduccion = add_tabs(aux_traduccion);
         tabs.push("switch");
         //oncat_traduccion_aux(number);
         //concat_traduccion_aux("):");
@@ -1623,6 +1811,15 @@ function sent_switch()
             panic_mode_var = true;
             return;
         }
+
+        //vienen los case retornar desde aqui
+        var sw = "\r\nswitcher = {"
+        sw = add_tabs(sw);
+        concat_traduccion(sw);
+        tabs.push("switcher");
+
+        return;
+
         // ahora tendrian que venir lo case
         // implementar primero el print for while do while 
         var number1  = "";
