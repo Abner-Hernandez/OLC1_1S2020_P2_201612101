@@ -131,6 +131,7 @@ var assign_sw = false;
 var vars_switch = [];
 var add_def_s = [];
 var arr_vars_switch = [];
+var apertura_va = [];
 
 // analisis lexico
 function lexer_analize(entry)
@@ -168,6 +169,7 @@ function lexer_analize(entry)
     vars_switch = [];
     add_def_s = [];
     arr_vars_switch = [];
+    apertura_va = [];
 
     var id = "";
     
@@ -480,6 +482,9 @@ function lexer_analize(entry)
                 }
             break;
             case 'f':
+                if(bool_id)
+                    break;
+
                 if(compare_string(entry.substr(i, size_entry), "for"))
                 {
                     list.push({lexeme: "for", row_l: row, column_l: column});
@@ -487,6 +492,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'i':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "int"))
                 {
                     list.push({lexeme: "int", row_l: row, column_l: column});
@@ -498,6 +505,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'e':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "else"))
                 {
                     list.push({lexeme: "else", row_l: row, column_l: column});
@@ -505,6 +514,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'v':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "void"))
                 {
                     list.push({lexeme: "void", row_l: row, column_l: column});
@@ -512,6 +523,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 's':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "switch"))
                 {
                     list.push({lexeme: "switch", row_l: row, column_l: column});
@@ -523,6 +536,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'c':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "case"))
                 {
                     list.push({lexeme: "case", row_l: row, column_l: column});
@@ -538,6 +553,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'C':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "Console.Write"))
                 {
                     list.push({lexeme: "Console.Write", row_l: row, column_l: column});
@@ -545,6 +562,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'w':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "while"))
                 {
                     list.push({lexeme: "while", row_l: row, column_l: column});
@@ -552,6 +571,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'r':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "return"))
                 {
                     list.push({lexeme: "return", row_l: row, column_l: column});
@@ -559,6 +580,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'b':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "break"))
                 {
                     list.push({lexeme: "break", row_l: row, column_l: column});
@@ -636,6 +659,8 @@ function lexer_analize(entry)
                     }
                 }
             case 'd':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "double"))
                 {
                     list.push({lexeme: "double", row_l: row, column_l: column});
@@ -651,6 +676,8 @@ function lexer_analize(entry)
                 }
                 break;
             case 'm':
+                if(bool_id)
+                    break;
                 if(compare_string(entry.substr(i, size_entry), "main"))
                 {
                     list.push({lexeme: "main", row_l: row, column_l: column});
@@ -678,7 +705,11 @@ function lexer_analize(entry)
                         numero = true;
 
                     id = id.concat(entry.charAt(i));
-                }else if(ac == "_" && numero == false)
+                }else if(numero && ac == ".")
+                {
+                    id = id.concat(entry.charAt(i));
+                }
+                else if(ac == "_" && numero == false)
                 {
                     bool_id = true;
                     id = id.concat(entry.charAt(i));
@@ -749,7 +780,7 @@ function parser()
             if(list[2].lexeme == "=" || list[2].lexeme == ";" || list[2].lexeme == ",")
             {
                 list.shift();
-                analice_declaration();
+                analice_declaration(false);
                 if(panic_mode_var)
                 {
                     aux_traduccion = "";
@@ -846,6 +877,27 @@ function parser()
             aux_traduccion = "";
             tabs.push("if");
 
+            d = -1;
+        }
+        else if (list[0].lexeme == "else" && panic_mode_var == false && method_s == true)
+        {
+            //function if
+            sent_else();
+            if(panic_mode_var)
+            {
+                aux_traduccion = "";
+                continue;
+            }
+
+            if(list[0].lexeme != "{")
+            {
+                panic_mode_var = true;
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                continue;
+            }else
+                list.shift();
+            concat_traduccion(aux_traduccion);
+            aux_traduccion = "";
             d = -1;
         }
         else if (list[0].lexeme == "switch" && panic_mode_var == false && method_s == true)
@@ -972,7 +1024,7 @@ function parser()
         {
             //primer case
             assign_sw = true;
-            analice_declaration();
+            analice_declaration(true);
             assign_sw = false;
             if(panic_mode_var)
             {
@@ -1201,6 +1253,18 @@ function parser()
                 d = -1; 
                 continue;
             }
+            else if(tabs[tabs.length - 1] == "if" && list[0].lexeme == "else")
+            {
+                //termino el if pero sentencia else
+                d = -1;
+                continue;
+            }else if(tabs[tabs.length - 1] == "if" && list[0].lexeme != "else")
+            {
+                //termino el if pero sentencia else
+                tabs.pop(); // saca if
+                d = -1;
+                continue;
+            }
             d = -1;
             if(tabs.length > 0);
             {
@@ -1254,9 +1318,10 @@ function parser()
 
 
 //function para analizar una declaracion
-function analice_declaration()
+function analice_declaration(asignacion)
 {
     var list_vars = [];
+    apertura_va = [];
 
     for(var i = 0 ; i < list.length ; i++)
     {
@@ -1281,7 +1346,10 @@ function analice_declaration()
                 //fin assignacion
                 for(var j = 0; j < list_vars.length; j++)
                 {
-                    concat_traduccion_aux("\r\nvar ");
+                    if(asignacion == false)
+                        concat_traduccion_aux("\r\nvar ");
+                    else
+                        concat_traduccion_aux("\r\n");
                     concat_traduccion_aux(list_vars.shift());
                     j = -1;
                 }
@@ -1294,19 +1362,48 @@ function analice_declaration()
             else if(next2.lexeme == "=")
             {
                 //asignar
-                var number = get_unario_number();
-                if(panic_mode_var)
+
+                if (list[0].lexeme != "(")
                 {
-                    aux_traduccion = "";
+                    var number = get_unario_number();
+                    if(panic_mode_var)
+                    {
+                        aux_traduccion = "";
+                        return;
+                    }
+                    var next = list.shift();
+                }else
+                {
+                    var description = verificate_operation(true);
+                    if(panic_mode_var || apertura_va > 0)
+                    {
+                        aux_traduccion = "";
+                        return;
+                    }
+                        
+                    for(var j = 0; j < list_vars.length; j++)
+                    {
+                        if(asignacion == false)
+                            concat_traduccion_aux("\r\nvar ");
+                        else
+                            concat_traduccion_aux("\r\n");
+                        concat_traduccion_aux(list_vars.shift());
+                        concat_traduccion_aux(" = ");
+                        concat_traduccion_aux(description);
+                        j = -1; 
+                    }
                     return;
                 }
-                var next = list.shift();
+
                 if(next.lexeme == ";")
                 {
                     //concatenar number asignado
                     for(var j = 0; j < list_vars.length; j++)
                     {
-                        concat_traduccion_aux("\r\nvar ");
+                        if(asignacion == false)
+                            concat_traduccion_aux("\r\nvar ");
+                        else
+                            concat_traduccion_aux("\r\n");
                         concat_traduccion_aux(list_vars.shift());
                         concat_traduccion_aux(" = ");
                         concat_traduccion_aux(number.lexeme);    
@@ -1321,7 +1418,7 @@ function analice_declaration()
                     //llamar a operacion
                     var description = verificate_operation(true);
 
-                    if(panic_mode_var)
+                    if(panic_mode_var || apertura_va > 0)
                     {
                         aux_traduccion = "";
                         return;
@@ -1329,7 +1426,11 @@ function analice_declaration()
                         
                     for(var j = 0; j < list_vars.length; j++)
                     {
-                        concat_traduccion_aux("\r\nvar ");
+                        if(asignacion == false)
+                            concat_traduccion_aux("\r\nvar ");
+                        else
+                            concat_traduccion_aux("\r\n");
+                        //concat_traduccion_aux("\r\nvar ");
                         concat_traduccion_aux(list_vars.shift());
                         concat_traduccion_aux(" = ");
                         concat_traduccion_aux(description);
@@ -1338,7 +1439,8 @@ function analice_declaration()
                     return;
                 }
             }
-        }else
+        }
+        else
         {
             errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "Se esperaba un 'id' se encontro:" + next.lexema});
             panic_mode_var = true;
@@ -1351,7 +1453,35 @@ function analice_declaration()
 function verificate_operation(declarations)
 {
     var description = "";
-    
+    while(true)
+    {
+        if (list[0].lexeme == "(")
+        {
+            list.shift();
+            apertura_va.push("(");
+            description = description.concat("(");
+        }
+        else if (list[0].lexeme == ")")
+        {
+            list.shift();
+            if(apertura_va.length > 0)
+            {
+                apertura_va.push("(");
+                description = description.concat(")");
+            }
+            else
+            {
+                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                panic_mode_var = true;
+                return;
+            }
+        }
+        else 
+        {
+            break;
+        }
+    }
+
     for(var i = 0 ; i < list.length ; i++)
     {
         var number = get_unario_number();
@@ -1362,6 +1492,36 @@ function verificate_operation(declarations)
         if(operator.lexeme.charAt(0) == "+" || operator.lexeme.charAt(0) == "-" || operator.lexeme.charAt(0) == "*" || operator.lexeme.charAt(0) == "/")
         {
             description = description.concat(operator.lexeme);
+
+            while(true)
+            {
+                if (list[0].lexeme == "(")
+                {
+                    list.shift();
+                    apertura_va.push("(");
+                    description = description.concat("(");
+                }
+                else if (list[0].lexeme == ")")
+                {
+                    list.shift();
+                    if(apertura_va.length > 0)
+                    {
+                        apertura_va.pop();
+                        description = description.concat(")");
+                    }
+                    else
+                    {
+                        errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                        panic_mode_var = true;
+                        return;
+                    }
+                }else
+                {
+                    break;
+                }
+            }
+
+
             var number2 = get_unario_number();
             if(panic_mode_var)
             {
@@ -1371,6 +1531,112 @@ function verificate_operation(declarations)
             set_unario_number(number2);
             i = 0;
             continue;
+
+        }else if (operator.lexeme == "(")
+        {
+            apertura_va.push("(");
+            description = description.concat("(");
+        }
+        else if (operator.lexeme == ")")
+        {
+            if(apertura_va.length ==  0 && declarations == false)
+            {
+                list.unshift(operator);
+                return description;
+            }else if(apertura_va.length > 0)
+            {
+                apertura_va.pop();
+                description = description.concat(")");
+            }
+            else
+            {
+                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                panic_mode_var = true;
+                return;
+            }
+
+            if(verificate_id(list[0]))
+            {
+                continue;
+            }
+            else if(list[0].lexeme.charAt(0) == "+" || list[0].lexeme.charAt(0) == "-" || list[0].lexeme.charAt(0) == "*" || list[0].lexeme.charAt(0) == "/")
+            {
+                description = description.concat(list.shift().lexeme);
+    
+                while(true)
+                {
+                    if (list[0].lexeme == "(")
+                    {
+                        list.shift();
+                        apertura_va.push("(");
+                        description = description.concat("(");
+                    }
+                    else if (list[0].lexeme == ")")
+                    {
+                        list.shift();
+                        if(apertura_va.length > 0)
+                        {
+                            apertura_va.pop();
+                            description = description.concat(")");
+                        }
+                        else
+                        {
+                            errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                            panic_mode_var = true;
+                            return;
+                        }
+                    }else
+                    {
+                        break;
+                    }
+                }
+    
+    
+                var number2 = get_unario_number();
+                if(panic_mode_var)
+                {
+                    aux_traduccion = "";
+                    return;
+                }
+                set_unario_number(number2);
+                i = 0;
+                continue;
+    
+            }            
+            else if(list[0].lexeme.charAt(0) == ";" && declarations == true)
+            {
+                return description;
+            }else if(declarations == false)
+            {
+                if(apertura_va.length ==  0 && list[0].lexeme == ")")
+                {
+                    return description;
+                }
+                for(var j = 0 ; j < oper_relationals.length ; j++)
+                {
+                    if(oper_relationals[j] == list[0].lexeme)
+                    {
+                        return description;
+                    }
+                }
+                if(list[0].lexeme == "&&" || list[0].lexeme == "||" || list[0].charAt(0).lexeme == ")" )
+                {
+                    list.unshift(list[0]);
+                    return description;
+                }
+                else
+                {
+                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'operador logico' se encontro:" + list[0].lexema});
+                    panic_mode_var = true;
+                    return;
+                }
+            }else
+            {
+                errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un ';' se encontro:" + operator.lexema});
+                panic_mode_var = true;
+                    return;
+            }
+
 
         }else if(operator.lexeme.charAt(0) == ";" && declarations == true)
         {
@@ -1579,6 +1845,41 @@ function sent_if()
     }
 }
 
+function sent_else()
+{
+    list.shift();
+    if(list[0].lexeme == "if")
+    {
+        list.shift();
+        if(list[0].lexeme == "(")
+        {
+            list.shift();
+            // definir condiciones
+            var tab = tabs.pop();
+            concat_traduccion_aux("\r\nelif ");
+            verificate_conditions();
+            tabs.push(tab);
+        }else
+        {
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+            panic_mode_var = true;
+            return;
+        }
+    }
+    else if(list[0].lexeme == "{")
+    {
+        concat_traduccion_aux("\r\nelse:");
+        var tab = tabs.pop();
+        aux_traduccion = add_tabs(aux_traduccion);
+        tabs.push(tab);
+    }else
+    {
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+        panic_mode_var = true;
+        return;
+    }
+}
+
 //definir condiciones
 function verificate_conditions()
 {
@@ -1586,6 +1887,7 @@ function verificate_conditions()
     {
         var is_another_con = false;
         //verificar si es logica
+        
         if(list[0].lexeme == "!" )
         {
             //Es una operacion logica
@@ -1601,144 +1903,16 @@ function verificate_conditions()
             }
         }else
         {
-            //todas las funciones van a ser pruebas
-            var number = get_unario_number();
-            if(panic_mode_var)
+            if(list[0].lexeme.charAt(0) == "(" || verificate_id(list[0]))
             {
-                aux_traduccion = "";
-                return;
-            }
-            else
-            {
-                // comprobar si es comparacion directa o hay una operacion
-                var simbol = list.shift();
-                i = -1;
-                if(simbol.lexeme.charAt(0) == "+" || simbol.lexeme.charAt(0) == "-" || simbol.lexeme.charAt(0) == "*" || simbol.lexeme.charAt(0) == "/")
+                var op = verificate_operation(false);
+                if(panic_mode_var)
                 {
-                    list.unshift(simbol);
-                    set_unario_number(number);
-                    //ejecutar analisis de operacion
-                    var op = verificate_operation(false);
-                    if(panic_mode_var)
-                    {
-                        aux_traduccion = "";
-                        return;
-                    }
-                    concat_traduccion_aux(op);
-                    
-                    var op_rel = list.shift()
-                    var aux_op = "";
-                    for(var j = 0 ; j < oper_relationals.length ; j++)
-                    {
-                        if(op_rel.lexeme == oper_relationals[j])
-                        {
-                            aux_op = op_rel.lexeme;
-                            break;
-                        }
-                    }
-                    if(aux_op == "")
-                    {
-                        //tendria que venir un operador relacional
-                        errores_sintacticos.push({lexeme: op_rel.lexeme, row_l: op_rel.row_l, column_l: op_rel.column_l, descripcion: "Se esperaba un operador logico se encontro:" + op_rel.lexema});
-                        panic_mode_var = true;
-                        return;
-                    }else
-                    {
-                        concat_traduccion_aux(aux_op);
-                        number = get_unario_number();
-                        if(panic_mode_var)
-                        {
-                            aux_traduccion = "";
-                            return;
-                        }
-                        simbol = list.shift();
-                        if(simbol.lexeme.charAt(0) == "+" || simbol.lexeme.charAt(0) == "-" || simbol.lexeme.charAt(0) == "*" || simbol.lexeme.charAt(0) == "/")
-                        {
-                            list.unshift(simbol);
-                            set_unario_number(number);
-                            //ejecutar analisis de operacion
-                            var op = verificate_operation(false);
-                            if(panic_mode_var)
-                            {
-                                aux_traduccion = "";
-                                return;
-                            }
-                            concat_traduccion_aux(op);
-                        }else if(simbol.lexeme == ")")
-                        {
-                            concat_traduccion_aux(number.lexeme);
-                            //Finalizaron las condiciones
-                            concat_traduccion_aux(" :");
-                            aux_traduccion = add_tabs(aux_traduccion);
-                            return;
-                        }else
-                        {
-                            errores_sintacticos.push({lexeme: simbol.lexeme, row_l: simbol.row_l, column_l: simbol.column_l, descripcion: "Se esperaba un ')' u otra condicion se encontro:" + simbol.lexema});
-                            //tendria que venir un otro operador
-                            panic_mode_var = true;
-                            return;
-                        }
-                        is_another_con = true;
-                    }
-
-
-                }else
-                {
-                    concat_traduccion_aux(number.lexeme);
-                    var aux_op = "";
-                    for(var j = 0 ; j < oper_relationals.length ; j++)
-                    {
-                        if(simbol.lexeme == oper_relationals[j])
-                        {
-                            aux_op = simbol.lexeme;
-                            break;
-                        }
-                    }
-                    if(aux_op == "")
-                    {
-                        //tendria que venir un operador relacional
-                        errores_sintacticos.push({lexeme: op_rel.lexeme, row_l: op_rel.row_l, column_l: op_rel.column_l, descripcion: "Se esperaba un operador logico se encontro:" + op_rel.lexema});
-                        panic_mode_var = true;
-                        return;
-                    }else
-                    {
-                        concat_traduccion_aux(aux_op);
-                        number = get_unario_number();
-                        if(panic_mode_var)
-                        {
-                            aux_traduccion = "";
-                            return;
-                        }
-                        simbol = list.shift();
-                        if(simbol.lexeme.charAt(0) == "+" || simbol.lexeme.charAt(0) == "-" || simbol.lexeme.charAt(0) == "*" || simbol.lexeme.charAt(0) == "/")
-                        {
-                            list.unshift(simbol);
-                            set_unario_number(number);
-                            //ejecutar analisis de operacion
-                            var op = verificate_operation(false);
-                            if(panic_mode_var)
-                            {
-                                aux_traduccion = "";
-                                return;
-                            }
-                            concat_traduccion_aux(op);
-                        }else if(simbol.lexeme == ")")
-                        {
-                            concat_traduccion_aux(number.lexeme);
-                            //Finalizaron las condiciones
-                            concat_traduccion_aux(" :");
-                            aux_traduccion = add_tabs(aux_traduccion);
-                            return;
-                        }else
-                        {
-                            errores_sintacticos.push({lexeme: simbol.lexeme, row_l: simbol.row_l, column_l: simbol.column_l, descripcion: "Se esperaba un ')' u otra condicion se encontro:" + simbol.lexema});
-                            //tendria que venir un otro operador
-                            panic_mode_var = true;
-                            return;
-                        }
-                        is_another_con = true;
-                    }
+                    aux_traduccion = "";
+                    return;
                 }
+                concat_traduccion_aux(op);
+                is_another_con = true;
             }
         }
 
@@ -1760,6 +1934,46 @@ function verificate_conditions()
                 return;
             }else
             {
+                var error = true;
+                for(var j = 0 ; j < oper_relationals.length ; j++)
+                {
+                    if(list[0].lexeme == oper_relationals[j])
+                    {
+                        concat_traduccion_aux(list.shift().lexeme);
+                        if(list[0].lexeme.charAt(0) == "(" || verificate_id(list[0]))
+                        {
+                            var op = verificate_operation(false);
+                            if(panic_mode_var)
+                            {
+                                aux_traduccion = "";
+                                return;
+                            }
+                            concat_traduccion_aux(op);
+                        }
+                        
+                        if(list[0].lexeme == "&&" || list[0].lexeme == "||")
+                            concat_traduccion_aux(list.shift().lexeme);
+                        else if(list[0].lexeme == ")")
+                        {
+                            list.shift();
+                            //Finalizaron las condiciones
+                            concat_traduccion_aux(" :");
+                            aux_traduccion = add_tabs(aux_traduccion);
+                            return;
+                        }
+                        else
+                        {
+                            error = true;
+                            j = -1;
+                            continue;
+                        }
+                        error = false;
+                        break;
+                    }
+                }
+                if(error == false)
+                    continue;
+
                 errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexema});
                 panic_mode_var = true;
                 return;
@@ -1767,11 +1981,8 @@ function verificate_conditions()
         }
         
     }
-
     
     //probar operaciones
-
-
     //probar condiciones simples
 }
 
