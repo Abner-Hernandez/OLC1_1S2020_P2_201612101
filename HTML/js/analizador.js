@@ -28,6 +28,11 @@ function add() {
   analize.setAttribute("class", "btn btn-info");
   analize.setAttribute('style', "width:32%");
   analize.onclick = function() {
+    //document.getElementById("content_table").empty();
+    $('#content_table').empty();
+    document.getElementById("json").value = "";
+    document.getElementById("html").value = "";
+    document.getElementById("python").value = "";
     var texto = document.getElementById('reqt' + reqs_id).value;
     lexer_analize(texto);
   };
@@ -805,7 +810,7 @@ function parser()
                 method_s = true;
                 if(list[0].lexeme != "{")
                 {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
                     panic_mode_var = true;
                     continue;
                 }else
@@ -847,7 +852,7 @@ function parser()
             if(list[0].lexeme != "{")
             {
                 panic_mode_var = true;
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
                 continue;
             }else
                 list.shift();
@@ -869,7 +874,7 @@ function parser()
             if(list[0].lexeme != "{")
             {
                 panic_mode_var = true;
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
                 continue;
             }else
                 list.shift();
@@ -892,7 +897,7 @@ function parser()
             if(list[0].lexeme != "{")
             {
                 panic_mode_var = true;
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
                 continue;
             }else
                 list.shift();
@@ -923,7 +928,7 @@ function parser()
                 cases = list.shift().lexeme;
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'case' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'case' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -940,7 +945,7 @@ function parser()
                 list.shift();
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ':' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ':' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -989,7 +994,7 @@ function parser()
                 list.shift();
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ':' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ':' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -1048,7 +1053,7 @@ function parser()
 
             if(list[0].lexeme != "{")
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 continue;
             }else
@@ -1072,7 +1077,7 @@ function parser()
 
             if(list[0].lexeme != "{")
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 continue;
             }else
@@ -1093,7 +1098,7 @@ function parser()
 
             if(list[0].lexeme != "{")
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 continue;
             }else
@@ -1158,7 +1163,7 @@ function parser()
 
                 if(list[0].lexeme != "while")
                 {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'while' se encontro:" + list[0].lexema});
+                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'while' se encontro:" + list[0].lexeme});
                     panic_mode_var = true;
                     continue;
                 }else
@@ -1172,7 +1177,7 @@ function parser()
                         verificate_conditions();
                     }else
                     {
-                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
                         panic_mode_var = true;
                         return;
                     }
@@ -1185,7 +1190,7 @@ function parser()
         
                     if(list[0].lexeme != ";")
                     {
-                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
+                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexeme});
                         panic_mode_var = true;
                         continue;
                     }else
@@ -1335,7 +1340,7 @@ function analice_declaration(asignacion)
             if(next.lexeme.charAt(0) >= 0 && next.lexeme.charAt(0) <= 9)
             {
                 //Es un numero no identificador
-                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "Se esperaba un 'id' se encontro:" + next.lexema});
+                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "Se esperaba un 'id' se encontro:" + next.lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -1442,7 +1447,7 @@ function analice_declaration(asignacion)
         }
         else
         {
-            errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "Se esperaba un 'id' se encontro:" + next.lexema});
+            errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "Se esperaba un 'id' se encontro:" + next.lexeme});
             panic_mode_var = true;
             return;
         }
@@ -1471,7 +1476,7 @@ function verificate_operation(declarations)
             }
             else
             {
-                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -1511,7 +1516,7 @@ function verificate_operation(declarations)
                     }
                     else
                     {
-                        errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                        errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexeme});
                         panic_mode_var = true;
                         return;
                     }
@@ -1550,7 +1555,7 @@ function verificate_operation(declarations)
             }
             else
             {
-                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -1581,7 +1586,7 @@ function verificate_operation(declarations)
                         }
                         else
                         {
-                            errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexema});
+                            errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "No Se esperaba un ')' ya que no a venido uno de apertura se encontro:" + next.lexeme});
                             panic_mode_var = true;
                             return;
                         }
@@ -1626,13 +1631,13 @@ function verificate_operation(declarations)
                 }
                 else
                 {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'operador logico' se encontro:" + list[0].lexema});
+                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'operador logico' se encontro:" + list[0].lexeme});
                     panic_mode_var = true;
                     return;
                 }
             }else
             {
-                errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un ';' se encontro:" + operator.lexema});
+                errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un ';' se encontro:" + operator.lexeme});
                 panic_mode_var = true;
                     return;
             }
@@ -1658,13 +1663,13 @@ function verificate_operation(declarations)
             }
             else
             {
-                errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un 'operador logico' se encontro:" + operator.lexema});
+                errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un 'operador logico' se encontro:" + operator.lexeme});
                 panic_mode_var = true;
                 return;
             }
         }else
         {
-            errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un ';' se encontro:" + operator.lexema});
+            errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un ';' se encontro:" + operator.lexeme});
             panic_mode_var = true;
                 return;
         }
@@ -1683,7 +1688,7 @@ function verificate_function()
         if(next.lexeme.charAt(0) >= 0 && next.lexeme.charAt(0) <= 9)
         {
             //Es un numero no identificador
-            errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "Se esperaba un 'id' se encontro:" + next.lexema});
+            errores_sintacticos.push({lexeme: next.lexeme, row_l: next.row_l, column_l: next.column_l, descripcion: "Se esperaba un 'id' se encontro:" + next.lexeme});
             panic_mode_var = true;
             return;
         }
@@ -1696,7 +1701,7 @@ function verificate_function()
         }
         else
         {
-            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
             panic_mode_var = true;
             return;
         }
@@ -1719,7 +1724,7 @@ function verificate_function()
         }
         else
         {
-            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
             panic_mode_var = true;
             return;
         }
@@ -1730,7 +1735,7 @@ function verificate_function()
             aux_traduccion = add_tabs(aux_traduccion);
         }else
         {
-            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexema});
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexeme});
             panic_mode_var = true;
         }
         return;
@@ -1767,7 +1772,7 @@ function get_parameters()
                     if(aux_id_var.lexeme.charAt(0) >= 0 && aux_id_var.lexeme.charAt(0) <= 9)
                     {
                         //Es un numero no identificador
-                        errores_sintacticos.push({lexeme: aux_id_var.lexeme, row_l: aux_id_var.row_l, column_l: aux_id_var.column_l, descripcion: "Se esperaba un 'id' se encontro:" + aux_id_var.lexema});
+                        errores_sintacticos.push({lexeme: aux_id_var.lexeme, row_l: aux_id_var.row_l, column_l: aux_id_var.column_l, descripcion: "Se esperaba un 'id' se encontro:" + aux_id_var.lexeme});
                         panic_mode_var = true;
                         return;
                     }
@@ -1778,7 +1783,7 @@ function get_parameters()
                     {
                         if(!verificate_type(list[0].lexeme))
                         {
-                            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'otro typo de parametro' se encontro:" + list[0].lexema});
+                            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'otro typo de parametro' se encontro:" + list[0].lexeme});
                             panic_mode_var = true;
                             return;
                         }
@@ -1799,7 +1804,7 @@ function get_parameters()
                         return;
                     }else
                     {
-                        errores_sintacticos.push({lexeme: is_another_par.lexeme, row_l: is_another_par.row_l, column_l: is_another_par.column_l, descripcion: "Se esperaba un otro parametro o ')' se encontro:" + is_another_par.lexema});
+                        errores_sintacticos.push({lexeme: is_another_par.lexeme, row_l: is_another_par.row_l, column_l: is_another_par.column_l, descripcion: "Se esperaba un otro parametro o ')' se encontro:" + is_another_par.lexeme});
                         panic_mode_var = true;
                         return;
                     }
@@ -1819,7 +1824,7 @@ function get_parameters()
                 return;
             }else
             {
-                errores_sintacticos.push({lexeme: id_par.lexeme, row_l: id_par.row_l, column_l: id_par.column_l, descripcion: "Se esperaba un otro parametro o ')' se encontro:" + id_par.lexema});
+                errores_sintacticos.push({lexeme: id_par.lexeme, row_l: id_par.row_l, column_l: id_par.column_l, descripcion: "Se esperaba un otro parametro o ')' se encontro:" + id_par.lexeme});
                 panic_mode_var = true;
                 return;
             }   
@@ -1839,7 +1844,7 @@ function sent_if()
         verificate_conditions();
     }else
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
         return;
     }
@@ -1861,7 +1866,7 @@ function sent_else()
             tabs.push(tab);
         }else
         {
-            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
             panic_mode_var = true;
             return;
         }
@@ -1874,7 +1879,7 @@ function sent_else()
         tabs.push(tab);
     }else
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
         return;
     }
@@ -1883,6 +1888,7 @@ function sent_else()
 //definir condiciones
 function verificate_conditions()
 {
+    var negation = false;
     for(var i = 0 ; i < list.length ; i++)
     {
         var is_another_con = false;
@@ -1900,6 +1906,7 @@ function verificate_conditions()
                 concat_traduccion_aux("!")
                 concat_traduccion_aux(next.lexeme);
                 is_another_con = true;
+                negation = true;
             }
         }else
         {
@@ -1934,48 +1941,52 @@ function verificate_conditions()
                 return;
             }else
             {
-                var error = true;
-                for(var j = 0 ; j < oper_relationals.length ; j++)
+                if(negation == false)
                 {
-                    if(list[0].lexeme == oper_relationals[j])
+                    var error = true;
+                    for(var j = 0 ; j < oper_relationals.length ; j++)
                     {
-                        concat_traduccion_aux(list.shift().lexeme);
-                        if(list[0].lexeme.charAt(0) == "(" || verificate_id(list[0]))
+                        if(list[0].lexeme == oper_relationals[j])
                         {
-                            var op = verificate_operation(false);
-                            if(panic_mode_var)
+                            concat_traduccion_aux(list.shift().lexeme);
+                            if(list[0].lexeme.charAt(0) == "(" || verificate_id(list[0]))
                             {
-                                aux_traduccion = "";
+                                var op = verificate_operation(false);
+                                if(panic_mode_var)
+                                {
+                                    aux_traduccion = "";
+                                    return;
+                                }
+                                concat_traduccion_aux(op);
+                            }
+                            
+                            if(list[0].lexeme == "&&" || list[0].lexeme == "||")
+                                concat_traduccion_aux(list.shift().lexeme);
+                            else if(list[0].lexeme == ")")
+                            {
+                                list.shift();
+                                //Finalizaron las condiciones
+                                concat_traduccion_aux(" :");
+                                aux_traduccion = add_tabs(aux_traduccion);
                                 return;
                             }
-                            concat_traduccion_aux(op);
+                            else
+                            {
+                                error = true;
+                                j = -1;
+                                continue;
+                            }
+                            error = false;
+                            break;
                         }
-                        
-                        if(list[0].lexeme == "&&" || list[0].lexeme == "||")
-                            concat_traduccion_aux(list.shift().lexeme);
-                        else if(list[0].lexeme == ")")
-                        {
-                            list.shift();
-                            //Finalizaron las condiciones
-                            concat_traduccion_aux(" :");
-                            aux_traduccion = add_tabs(aux_traduccion);
-                            return;
-                        }
-                        else
-                        {
-                            error = true;
-                            j = -1;
-                            continue;
-                        }
-                        error = false;
-                        break;
                     }
+                    if(error == false)
+                        continue;
                 }
-                if(error == false)
-                    continue;
 
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un finalizacion de comparaciones u otra comparacion se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
+                negation = false;
                 return;
             }
         }
@@ -2009,7 +2020,7 @@ function sent_switch()
             list.shift();
         else
         {
-            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexema});
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexeme});
             panic_mode_var = true;
             return;
         }
@@ -2018,7 +2029,7 @@ function sent_switch()
             list.shift();
         else
         {
-            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexema});
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '{' se encontro:" + list[0].lexeme});
             panic_mode_var = true;
             return;
         }
@@ -2030,177 +2041,9 @@ function sent_switch()
         tabs.push("switcher");
 
         return;
-
-        // ahora tendrian que venir lo case
-        // implementar primero el print for while do while 
-        var number1  = "";
-        var dato = "";
-        var aux_cases = "\r\n";
-        var aux_cc = "";
-        tabs.push("switcher");
-        for(var i = 0 ; i < list.length ; i++)
-        {
-            var cases = "";
-            if(list[0].lexeme == "case" || list[0].lexeme == "default")
-            {
-                cases = list.shift().lexeme;
-                i = -1;
-            }
-            else
-            {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'case' se encontro:" + list[0].lexema});
-                panic_mode_var = true;
-                return;
-            }
-
-            if(cases != "default")
-                number1 = get_unario_number();
-            if(panic_mode_var)
-            {
-                aux_traduccion = "";
-                return;
-            }
-
-            if(list[0].lexeme == ":")
-                list.shift();
-            else
-            {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ':' se encontro:" + list[0].lexema});
-                panic_mode_var = true;
-                return;
-            }
-
-            if(cases != "default")
-                aux_cases = aux_cases.concat(number1.lexeme);
-            else
-                aux_cases = aux_cases.concat(++number1.lexeme);
-            aux_cases = aux_cases.concat(": ");
-            // definir cases
-
-            if(verificate_id(list[0]))
-            {
-                // es una asignacion
-                var aux_a = "";
-                var n = get_unario_number();
-                dato = n.lexeme;
-                if(panic_mode_var)
-                {
-                    aux_traduccion = "";
-                    return;
-                }
-
-                if(list[0].lexeme == "=")
-                    list.shift();
-                else
-                {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '=' se encontro:" + list[0].lexema});
-                    panic_mode_var = true;
-                    return;
-                }
-                var result = get_unario_number();
-                aux_a = aux_a.concat(n.lexeme);
-                aux_a = aux_a.concat(" = ");
-                aux_a = aux_a.concat(result.lexeme);
-
-                if(list[0].lexeme == ";")
-                    list.shift();
-                else
-                {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
-                    panic_mode_var = true;
-                    return;
-                }
-
-                if(list[0].lexeme == "break")
-                {
-                    list.shift();
-                    if(list[0].lexeme == ";")
-                        list.shift();
-                    else
-                    {
-                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
-                        panic_mode_var = true;
-                        return;
-                    }
-                }
-                if(list[0].lexeme == "case" || list[0].lexeme == "default")
-                {
-                    aux_a = aux_a.concat(",\r\n");
-                    aux_cases = aux_cases.concat(aux_a);
-                    aux_cases = add_tabs(aux_cases);
-                    aux_cc = aux_cc.concat(aux_cases);
-                    aux_cases = "";
-                    continue;
-                }else if(list[0].lexeme == "}")
-                {
-                    aux_cases = aux_cases.concat(aux_a);
-                    aux_cases = add_tabs(aux_cases);
-                    aux_cc = aux_cc.concat(aux_cases);
-                    tabs.pop();
-                    concat_traduccion_aux(dato);
-                    var sw = "\r\nswitcher = {"
-                    var ss = "\r\n}"
-                    sw = add_tabs(sw);
-                    ss = add_tabs(ss);
-                    concat_traduccion_aux("):");
-                    concat_traduccion_aux(sw);
-                    concat_traduccion_aux(aux_cc);
-                    concat_traduccion_aux(",");
-                    concat_traduccion_aux(ss);
-                    //finalizo switch
-                    tabs.pop();
-                    return;
-                }
-
-            }else if(list[0].lexeme == "Console.Write")
-            {
-                // es una asignacion
-                var cw = console_write();
-
-                if(list[0].lexeme == "break")
-                {
-                    list.shift();
-                    if(list[0].lexeme == ";")
-                        list.shift();
-                    else
-                    {
-                        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
-                        panic_mode_var = true;
-                        return;
-                    }
-                }
-                if(list[0].lexeme == "case" || list[0].lexeme == "default")
-                {
-                    cw = cw.concat(",\r\n");
-                    //cw = "\r\n".concat(cw);
-                    aux_cc = aux_cc.concat(cw);
-                    continue;
-                }else if(list[0].lexeme == "}")
-                {
-                    tabs.pop();
-                    aux_cc = aux_cc.concat(cw);
-                    concat_traduccion_aux(dato);
-                    var sw = "\r\nswitcher = {"
-                    var ss = "\r\n}"
-                    sw = add_tabs(sw);
-                    ss = add_tabs(ss);
-                    ss = ss.substr(2, ss.length-1);
-                    concat_traduccion_aux("):");
-                    concat_traduccion_aux(sw);
-                    aux_cc = aux_cc.substr(0, aux_cc.length-3)
-                    concat_traduccion_aux(aux_cc);
-                    concat_traduccion_aux(ss);
-                    //finalizo switch
-                    tabs.pop();
-                    return;
-                }
-            }
-
-        }
-
     }else
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
         return;
     }
@@ -2213,7 +2056,7 @@ function sent_for()
 
     if(list[0].lexeme != "(")
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
             return;
     }else
@@ -2250,7 +2093,7 @@ function sent_for()
                 list.shift();
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -2265,7 +2108,7 @@ function sent_for()
                 list.shift();
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '<' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '<' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -2283,7 +2126,7 @@ function sent_for()
                 list.shift();
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -2299,7 +2142,7 @@ function sent_for()
                 list.shift();
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '++' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '++' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -2309,7 +2152,7 @@ function sent_for()
                 list.shift();
             else
             {
-                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexema});
+                errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ')' se encontro:" + list[0].lexeme});
                 panic_mode_var = true;
                 return;
             }
@@ -2322,7 +2165,7 @@ function sent_for()
         }
         else
         {
-            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '=' se encontro:" + list[0].lexema});
+            errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '=' se encontro:" + list[0].lexeme});
             panic_mode_var = true;
             return;
         }
@@ -2330,7 +2173,7 @@ function sent_for()
     }
     else
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'int' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un 'int' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
             return;
     }
@@ -2349,7 +2192,7 @@ function sent_while()
         verificate_conditions();
     }else
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
         return;
     }
@@ -2361,7 +2204,7 @@ function console_write()
     list.shift();
     if(list[0].lexeme != "(")
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un '(' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
             return;
     }else
@@ -2394,7 +2237,7 @@ function console_write()
             {
                 if(list[0].lexeme != ";")
                 {
-                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
+                    errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexeme});
                     panic_mode_var = true;
                         return;
                 }else
@@ -2403,7 +2246,7 @@ function console_write()
                 break;
             }else
             {
-                errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un ')' se encontro:" + operator.lexema});
+                errores_sintacticos.push({lexeme: operator.lexeme, row_l: operator.row_l, column_l: operator.column_l, descripcion: "Se esperaba un ')' se encontro:" + operator.lexeme});
                 panic_mode_var = true;
                     return;
             }
@@ -2444,7 +2287,7 @@ function sent_break()
 
     if(list[0].lexeme != ";")
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
         return;
     }else
@@ -2461,7 +2304,7 @@ function sent_continue()
 
     if(list[0].lexeme != ";")
     {
-        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexema});
+        errores_sintacticos.push({lexeme: list[0].lexeme, row_l: list[0].row_l, column_l: list[0].column_l, descripcion: "Se esperaba un ';' se encontro:" + list[0].lexeme});
         panic_mode_var = true;
         return;
     }else
@@ -2529,7 +2372,7 @@ function get_unario_number()
             return simbol;
         }else
         {
-            errores_sintacticos.push({lexeme: number.lexeme, row_l: number.row_l, column_l: number.column_l, descripcion: "Se esperaba un 'id' se encontro:" + number.lexema});
+            errores_sintacticos.push({lexeme: number.lexeme, row_l: number.row_l, column_l: number.column_l, descripcion: "Se esperaba un 'id' se encontro:" + number.lexeme});
             panic_mode_var = true;
             return;
         }
@@ -2537,7 +2380,7 @@ function get_unario_number()
         return get_id(simbol);
     else
     {
-        errores_sintacticos.push({lexeme: simbol.lexeme, row_l: simbol.row_l, column_l: simbol.column_l, descripcion: "Se esperaba un 'un operador unario' se encontro:" + simbol.lexema});
+        errores_sintacticos.push({lexeme: simbol.lexeme, row_l: simbol.row_l, column_l: simbol.column_l, descripcion: "Se esperaba un 'un operador unario' se encontro:" + simbol.lexeme});
         panic_mode_var = true;
         return;
     }
